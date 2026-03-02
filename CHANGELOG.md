@@ -2,6 +2,16 @@
 
 All notable changes to TypeRank will be documented in this file.
 
+## [1.0.0] - 2026-03-03
+
+### 🚀 Stable Release
+
+- Redesigned extension icon — clean, minimalistic keycap
+- Improved README — streamlined for end users
+- All features from 0.1.0 are now stable
+
+---
+
 ## [0.1.0] - 2026-03-02
 
 ### 🎉 Initial Release
