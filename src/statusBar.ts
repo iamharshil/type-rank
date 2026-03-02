@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { StorageService } from './storageService';
+import { getLevelIcon } from './engine/levelSystem';
 
 export class StatusBarManager {
     private wpmItem: vscode.StatusBarItem;
@@ -34,8 +35,9 @@ export class StatusBarManager {
             this.wpmItem.text = '$(keyboard) TypeRank';
         }
 
-        // Rank badge display
-        this.rankItem.text = `${profile.currentRankBadge} ${profile.currentRank}`;
+        // Rank badge + level display
+        const lvlIcon = getLevelIcon(profile.level);
+        this.rankItem.text = `${profile.currentRankBadge} ${profile.currentRank} | ${lvlIcon} Lv.${profile.level}`;
     }
 
     updateAfterTest(wpm: number): void {

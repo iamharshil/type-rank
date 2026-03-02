@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getLevelFromTotalXp, getLevelTitle, getLevelIcon, getNextMilestone } from './engine/levelSystem';
 
 export interface TestResult {
     wpm: number;
@@ -35,6 +36,17 @@ export interface UserProfile {
     streak: number;
     lastTestDate: string;
     consecutiveDays: number;
+    // Level system
+    level: number;
+    currentXp: number;
+    xpForNextLevel: number;
+    levelProgress: number;
+    totalXp: number;
+    levelTitle: string;
+    levelIcon: string;
+    dailyStreak: number;
+    nextMilestoneLevel: number;
+    nextMilestoneTitle: string;
 }
 
 export class StorageService {
@@ -97,6 +109,12 @@ export class StorageService {
         // Calculate consecutive days
         const consecutiveDays = this.calculateConsecutiveDays(history);
 
+        // Level system
+        const totalXp = this.getTotalXp();
+        const levelInfo = getLevelFromTotalXp(totalXp);
+        const dailyStreak = this.getDailyStreak();
+        const nextMilestone = getNextMilestone(levelInfo.level);
+
         return {
             displayName: this.context.globalState.get<string>('typerank.displayName', 'Typer'),
             totalTests: history.length,
@@ -106,7 +124,17 @@ export class StorageService {
             currentRankBadge: badge,
             streak: this.getSessionStreak(),
             lastTestDate: history.length > 0 ? new Date(history[0].timestamp).toLocaleDateString() : 'Never',
-            consecutiveDays
+            consecutiveDays,
+            level: levelInfo.level,
+            currentXp: levelInfo.currentXp,
+            xpForNextLevel: levelInfo.xpForNext,
+            levelProgress: levelInfo.progress,
+            totalXp,
+            levelTitle: getLevelTitle(levelInfo.level),
+            levelIcon: getLevelIcon(levelInfo.level),
+            dailyStreak,
+            nextMilestoneLevel: nextMilestone ? nextMilestone.level : 500,
+            nextMilestoneTitle: nextMilestone ? nextMilestone.title : 'GOAT'
         };
     }
 
@@ -130,6 +158,70 @@ export class StorageService {
         if (wpm >= 51) { return { rank: 'Gold', badge: '🥇' }; }
         if (wpm >= 31) { return { rank: 'Silver', badge: '🥈' }; }
         return { rank: 'Bronze', badge: '🥉' };
+    }
+
+    // --- XP & Level ---
+
+    getTotalXp(): number {
+        return this.context.globalState.get<number>('typerank.totalXp', 0);
+    }
+
+    async addXp(amount: number): Promise<{ previousLevel: number; newLevel: number }> {
+        const prevTotal = this.getTotalXp();
+        const prevLevelInfo = getLevelFromTotalXp(prevTotal);
+        const newTotal = prevTotal + amount;
+        await this.context.globalState.update('typerank.totalXp', newTotal);
+        const newLevelInfo = getLevelFromTotalXp(newTotal);
+        return { previousLevel: prevLevelInfo.level, newLevel: newLevelInfo.level };
+    }
+
+    // --- Daily Streak ---
+
+    getDailyStreak(): number {
+        const lastDate = this.context.globalState.get<string>('typerank.lastDailyDate', '');
+        const streak = this.context.globalState.get<number>('typerank.dailyStreak', 0);
+        const today = new Date().toISOString().split('T')[0];
+
+        if (lastDate === today) {
+            return streak; // Already counted today
+        }
+
+        // Check if yesterday was the last date (streak continues)
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+        if (lastDate === yesterdayStr) {
+            return streak; // Streak is still valid, will increment when test is done
+        }
+
+        // Streak broken
+        return lastDate === '' ? 0 : 0;
+    }
+
+    async updateDailyStreak(): Promise<number> {
+        const lastDate = this.context.globalState.get<string>('typerank.lastDailyDate', '');
+        const streak = this.context.globalState.get<number>('typerank.dailyStreak', 0);
+        const today = new Date().toISOString().split('T')[0];
+
+        if (lastDate === today) {
+            return streak; // Already updated today
+        }
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+        let newStreak: number;
+        if (lastDate === yesterdayStr) {
+            newStreak = streak + 1; // Continue streak
+        } else {
+            newStreak = 1; // Start fresh
+        }
+
+        await this.context.globalState.update('typerank.dailyStreak', newStreak);
+        await this.context.globalState.update('typerank.lastDailyDate', today);
+        return newStreak;
     }
 
     private calculateConsecutiveDays(history: TestResult[]): number {
@@ -163,5 +255,8 @@ export class StorageService {
         await this.context.globalState.update('typerank.earnedBadges', undefined);
         await this.context.globalState.update('typerank.sessionStreak', undefined);
         await this.context.globalState.update('typerank.displayName', undefined);
+        await this.context.globalState.update('typerank.totalXp', undefined);
+        await this.context.globalState.update('typerank.dailyStreak', undefined);
+        await this.context.globalState.update('typerank.lastDailyDate', undefined);
     }
 }

@@ -26,6 +26,16 @@
         document.getElementById('statBestWpm').textContent = profile.bestWpm;
         document.getElementById('statAvgWpm').textContent = profile.averageWpm;
         document.getElementById('statTests').textContent = profile.totalTests;
+
+        // Level section
+        document.getElementById('sidebarLevelIcon').textContent = profile.levelIcon;
+        document.getElementById('sidebarLevel').textContent = profile.level;
+        document.getElementById('sidebarLevelTitle').textContent = profile.levelTitle;
+        document.getElementById('sidebarXpLabel').textContent = profile.currentXp + ' / ' + profile.xpForNextLevel + ' XP';
+        document.getElementById('sidebarXpBar').style.width = (profile.levelProgress * 100) + '%';
+        document.getElementById('sidebarStreak').textContent = '🔥 ' + profile.dailyStreak;
+        document.getElementById('sidebarMilestone').textContent =
+            'Next: Lv.' + profile.nextMilestoneLevel + ' ' + profile.nextMilestoneTitle;
     }
 
     function renderLeaderboard(scores) {

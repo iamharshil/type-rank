@@ -333,7 +333,7 @@
     }
 
     // --- Results Rendering ---
-    function showResults(result, newBadges, profile, cheatReport) {
+    function showResults(result, newBadges, profile, cheatReport, xpBreakdown, leveledUp, newMilestones, previousLevel, newLevel) {
         // Hide test UI, show results
         document.querySelector('.word-container').style.display = 'none';
         liveStats.style.display = 'none';
@@ -357,6 +357,75 @@
 
         // Draw WPM chart
         drawWpmChart(result.wpmOverTime);
+
+        // --- XP & Level ---
+        if (xpBreakdown) {
+            document.getElementById('xpEarned').textContent = '+' + xpBreakdown.totalXp + ' XP';
+
+            // XP detail breakdown
+            const details = document.getElementById('xpDetails');
+            details.innerHTML = '';
+            const items = [
+                { label: 'Base', value: xpBreakdown.baseXp },
+                { label: 'WPM', value: xpBreakdown.wpmBonus },
+                { label: 'Accuracy', value: xpBreakdown.accuracyBonus },
+                { label: 'Consistency', value: xpBreakdown.consistencyBonus },
+                { label: 'Duration', value: xpBreakdown.durationBonus },
+            ];
+            items.forEach(item => {
+                if (item.value > 0) {
+                    const el = document.createElement('span');
+                    el.className = 'xp-detail-item';
+                    el.textContent = item.label + ' +' + item.value;
+                    details.appendChild(el);
+                }
+            });
+
+            // Streak
+            document.getElementById('streakCount').textContent = profile.dailyStreak;
+            document.getElementById('streakMultiplier').textContent = xpBreakdown.streakMultiplier + 'x';
+        }
+
+        // Level display
+        if (profile) {
+            document.getElementById('levelIcon').textContent = profile.levelIcon;
+            document.getElementById('levelNumber').textContent = profile.level;
+            document.getElementById('levelTitle').textContent = profile.levelTitle;
+            document.getElementById('xpText').textContent = profile.currentXp + ' / ' + profile.xpForNextLevel + ' XP';
+
+            // Animate XP bar
+            setTimeout(() => {
+                document.getElementById('xpBar').style.width = (profile.levelProgress * 100) + '%';
+            }, 300);
+        }
+
+        // Level up banner
+        if (leveledUp) {
+            const section = document.getElementById('levelUpSection');
+            section.classList.remove('hidden');
+            document.getElementById('levelUpLevels').textContent =
+                'Level ' + previousLevel + ' → Level ' + newLevel;
+        }
+
+        // Milestones
+        if (newMilestones && newMilestones.length > 0) {
+            const section = document.getElementById('milestoneSection');
+            const list = document.getElementById('milestonesList');
+            section.classList.remove('hidden');
+            list.innerHTML = '';
+            newMilestones.forEach((m, i) => {
+                const item = document.createElement('div');
+                item.className = 'milestone-item';
+                item.style.animationDelay = (i * 0.2) + 's';
+                item.innerHTML = `
+                    <span class="milestone-icon">${m.icon}</span>
+                    <span class="milestone-name">${m.title}</span>
+                    <span class="milestone-desc">${m.description}</span>
+                    <span class="milestone-reward">${m.reward}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
 
         // Show new badges
         if (newBadges && newBadges.length > 0) {
@@ -481,6 +550,9 @@
         resultsScreen.classList.add('hidden');
         document.getElementById('cheatWarning').classList.add('hidden');
         document.getElementById('newBadgesSection').classList.add('hidden');
+        document.getElementById('levelUpSection').classList.add('hidden');
+        document.getElementById('milestoneSection').classList.add('hidden');
+        document.getElementById('xpBar').style.width = '0%';
         wordsDisplay.style.transform = '';
 
         hiddenInput.value = '';
@@ -509,7 +581,7 @@
                 break;
 
             case 'showResults':
-                showResults(msg.result, msg.newBadges, msg.profile, msg.cheatReport);
+                showResults(msg.result, msg.newBadges, msg.profile, msg.cheatReport, msg.xpBreakdown, msg.leveledUp, msg.newMilestones, msg.previousLevel, msg.newLevel);
                 break;
         }
     });

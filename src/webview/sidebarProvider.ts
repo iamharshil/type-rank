@@ -3,83 +3,83 @@ import { StorageService } from '../storageService';
 import { ALL_BADGES } from '../badges/badgeDefinitions';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = 'typerank.sidebarView';
-    private view?: vscode.WebviewView;
-    private storage: StorageService;
-    private extensionUri: vscode.Uri;
+  public static readonly viewType = 'typerank.sidebarView';
+  private view?: vscode.WebviewView;
+  private storage: StorageService;
+  private extensionUri: vscode.Uri;
 
-    constructor(extensionUri: vscode.Uri, storage: StorageService) {
-        this.extensionUri = extensionUri;
-        this.storage = storage;
+  constructor(extensionUri: vscode.Uri, storage: StorageService) {
+    this.extensionUri = extensionUri;
+    this.storage = storage;
+  }
+
+  public resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken
+  ): void {
+    this.view = webviewView;
+
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media')]
+    };
+
+    webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+
+    webviewView.webview.onDidReceiveMessage(async (message) => {
+      switch (message.command) {
+        case 'requestData':
+          this.sendDataToWebview();
+          break;
+        case 'startTest':
+          vscode.commands.executeCommand('typerank.startTest');
+          break;
+      }
+    });
+
+    webviewView.onDidChangeVisibility(() => {
+      if (webviewView.visible) {
+        this.sendDataToWebview();
+      }
+    });
+  }
+
+  public refresh(): void {
+    if (this.view) {
+      this.sendDataToWebview();
     }
+  }
 
-    public resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        _context: vscode.WebviewViewResolveContext,
-        _token: vscode.CancellationToken
-    ): void {
-        this.view = webviewView;
+  private sendDataToWebview(): void {
+    if (!this.view) { return; }
 
-        webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, 'media')]
-        };
+    const profile = this.storage.getProfile();
+    const history = this.storage.getTestHistory();
+    const earnedBadges = this.storage.getEarnedBadges();
 
-        webviewView.webview.html = this.getHtmlContent(webviewView.webview);
+    // Top 10 scores
+    const topScores = [...history]
+      .filter(r => !r.isSuspicious)
+      .sort((a, b) => b.wpm - a.wpm)
+      .slice(0, 10);
 
-        webviewView.webview.onDidReceiveMessage(async (message) => {
-            switch (message.command) {
-                case 'requestData':
-                    this.sendDataToWebview();
-                    break;
-                case 'startTest':
-                    vscode.commands.executeCommand('typerank.startTest');
-                    break;
-            }
-        });
+    this.view.webview.postMessage({
+      command: 'loadData',
+      profile,
+      topScores,
+      earnedBadges,
+      allBadges: ALL_BADGES
+    });
+  }
 
-        webviewView.onDidChangeVisibility(() => {
-            if (webviewView.visible) {
-                this.sendDataToWebview();
-            }
-        });
-    }
+  private getHtmlContent(webview: vscode.Webview): string {
+    const mediaUri = vscode.Uri.joinPath(this.extensionUri, 'media');
+    const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(mediaUri, 'sidebar.css'));
+    const jsUri = webview.asWebviewUri(vscode.Uri.joinPath(mediaUri, 'sidebar.js'));
+    const nonce = getNonce();
 
-    public refresh(): void {
-        if (this.view) {
-            this.sendDataToWebview();
-        }
-    }
-
-    private sendDataToWebview(): void {
-        if (!this.view) { return; }
-
-        const profile = this.storage.getProfile();
-        const history = this.storage.getTestHistory();
-        const earnedBadges = this.storage.getEarnedBadges();
-
-        // Top 10 scores
-        const topScores = [...history]
-            .filter(r => !r.isSuspicious)
-            .sort((a, b) => b.wpm - a.wpm)
-            .slice(0, 10);
-
-        this.view.webview.postMessage({
-            command: 'loadData',
-            profile,
-            topScores,
-            earnedBadges,
-            allBadges: ALL_BADGES
-        });
-    }
-
-    private getHtmlContent(webview: vscode.Webview): string {
-        const mediaUri = vscode.Uri.joinPath(this.extensionUri, 'media');
-        const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(mediaUri, 'sidebar.css'));
-        const jsUri = webview.asWebviewUri(vscode.Uri.joinPath(mediaUri, 'sidebar.js'));
-        const nonce = getNonce();
-
-        return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -113,6 +113,23 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       </div>
     </div>
 
+    <!-- Level & XP -->
+    <div class="level-section">
+      <div class="level-header">
+        <span class="level-badge" id="sidebarLevelIcon">🌱</span>
+        <span class="level-info">
+          <span class="level-num">Lv. <strong id="sidebarLevel">0</strong></span>
+          <span class="level-title-text" id="sidebarLevelTitle">Newbie</span>
+        </span>
+        <span class="streak-badge" id="sidebarStreak">🔥 0</span>
+      </div>
+      <div class="sidebar-xp-bar-wrap">
+        <div class="sidebar-xp-bar" id="sidebarXpBar" style="width: 0%"></div>
+      </div>
+      <div class="xp-label" id="sidebarXpLabel">0 / 0 XP</div>
+      <div class="next-milestone" id="sidebarMilestone">Next: 🌱 Lv.1 Newbie</div>
+    </div>
+
     <!-- Quick Start -->
     <button class="start-btn" id="startTestBtn">
       <span class="start-icon">⌨️</span> Start Typing Test
@@ -138,14 +155,14 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
   <script nonce="${nonce}" src="${jsUri}"></script>
 </body>
 </html>`;
-    }
+  }
 }
 
 function getNonce(): string {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
 }

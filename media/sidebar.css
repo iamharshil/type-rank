@@ -94,6 +94,82 @@ body {
     color: var(--fg-dim);
 }
 
+/* --- Level Section --- */
+.level-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.level-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.level-badge {
+    font-size: 1.2rem;
+}
+
+.level-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.level-num {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.level-title-text {
+    font-size: 0.55rem;
+    color: var(--fg-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.streak-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #ff9500;
+    padding: 2px 6px;
+    background: rgba(255, 149, 0, 0.12);
+    border-radius: 4px;
+}
+
+.sidebar-xp-bar-wrap {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sidebar-xp-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4fc1ff, #4ec9b0, #a855f7);
+    border-radius: 4px;
+    transition: width 0.8s ease;
+}
+
+.xp-label {
+    font-size: 0.5rem;
+    color: var(--fg-dim);
+    text-align: right;
+}
+
+.next-milestone {
+    font-size: 0.5rem;
+    color: var(--fg-dim);
+    font-style: italic;
+}
+
 .start-btn {
     width: 100%;
     padding: 10px;
