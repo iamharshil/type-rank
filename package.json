@@ -1,0 +1,77 @@
+{
+  "name": "type-rank",
+  "displayName": "TypeRank",
+  "description": "A Monkeytype-inspired typing test with rankings, badges, anti-cheat, and a competitive leaderboard — right inside VS Code.",
+  "version": "0.1.0",
+  "publisher": "typerank",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1a1a2e",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "typing",
+    "typing test",
+    "wpm",
+    "monkeytype",
+    "speed",
+    "rank",
+    "badge"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "typerank.startTest",
+        "title": "TypeRank: Start Typing Test",
+        "icon": "$(play)"
+      },
+      {
+        "command": "typerank.showProfile",
+        "title": "TypeRank: Show Profile"
+      },
+      {
+        "command": "typerank.resetData",
+        "title": "TypeRank: Reset All Data"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "typerank-sidebar",
+          "title": "TypeRank",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "typerank-sidebar": [
+        {
+          "type": "webview",
+          "id": "typerank.sidebarView",
+          "name": "TypeRank"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.8",
+    "typescript": "^5.3.3"
+  }
+}

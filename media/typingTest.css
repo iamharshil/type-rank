@@ -1,0 +1,447 @@
+/* TypeRank Typing Test Styles */
+
+:root {
+  --bg: var(--vscode-editor-background);
+  --fg: var(--vscode-editor-foreground);
+  --fg-dim: var(--vscode-disabledForeground, #666);
+  --accent: var(--vscode-textLink-foreground, #4fc1ff);
+  --accent-dim: var(--vscode-textLink-activeForeground, #3daee6);
+  --correct: #4ec9b0;
+  --incorrect: #f44747;
+  --incorrect-bg: rgba(244, 71, 71, 0.15);
+  --current: var(--vscode-editorCursor-foreground, #fff);
+  --card-bg: var(--vscode-editorWidget-background, #252526);
+  --card-border: var(--vscode-editorWidget-border, #454545);
+  --btn-bg: var(--vscode-button-background, #0e639c);
+  --btn-fg: var(--vscode-button-foreground, #fff);
+  --btn-hover: var(--vscode-button-hoverBackground, #1177bb);
+  --warning-bg: rgba(244, 71, 71, 0.1);
+  --warning-border: rgba(244, 71, 71, 0.4);
+  --font-mono: var(--vscode-editor-fontFamily, 'Cascadia Code', 'Fira Code', 'Consolas', monospace);
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  color: var(--fg);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 850px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* --- Config Bar --- */
+.config-bar {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--card-border);
+}
+
+.config-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.config-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+  margin-right: 0.25rem;
+}
+
+.config-options {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.config-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--fg-dim);
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.config-btn:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.config-btn.active {
+  color: var(--accent);
+  background: rgba(79, 193, 255, 0.1);
+  border-color: var(--accent);
+}
+
+/* --- Timer --- */
+.timer-display {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0.8;
+  transition: opacity 0.3s;
+  letter-spacing: 0.05em;
+}
+
+.timer-display.running {
+  opacity: 1;
+}
+
+.timer-display.warning {
+  color: var(--incorrect);
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* --- Word Container --- */
+.word-container {
+  position: relative;
+  width: 100%;
+  min-height: 120px;
+  max-height: 160px;
+  overflow: hidden;
+  padding: 1rem 0;
+  cursor: text;
+}
+
+.words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  line-height: 2;
+  font-size: 1.25rem;
+  position: relative;
+}
+
+.word {
+  display: inline-flex;
+  position: relative;
+}
+
+.letter {
+  position: relative;
+  color: var(--fg-dim);
+  transition: color 0.1s;
+}
+
+.letter.correct {
+  color: var(--correct);
+}
+
+.letter.incorrect {
+  color: var(--incorrect);
+  background: var(--incorrect-bg);
+  border-radius: 2px;
+}
+
+.letter.current {
+  color: var(--fg);
+}
+
+.letter.current::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 2px;
+  bottom: 2px;
+  width: 2px;
+  background: var(--current);
+  border-radius: 1px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.loading-text {
+  color: var(--fg-dim);
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* --- Hidden Input --- */
+#hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* --- Live Stats --- */
+.live-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+/* --- Results Screen --- */
+.results-screen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: fadeIn 0.4s ease;
+}
+
+.results-screen.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.results-header {
+  text-align: center;
+}
+
+.results-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 0.5rem;
+}
+
+.cheat-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  color: var(--incorrect);
+}
+
+.cheat-warning.hidden {
+  display: none;
+}
+
+/* --- Results Grid --- */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.result-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.result-card.primary {
+  border-color: var(--accent);
+  background: rgba(79, 193, 255, 0.08);
+}
+
+.result-card.rank-card {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.result-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.result-card.primary .result-value {
+  color: var(--accent);
+  font-size: 2.5rem;
+}
+
+.result-card.rank-card .result-value {
+  font-size: 2rem;
+}
+
+.result-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-dim);
+}
+
+/* --- WPM Chart --- */
+.chart-container {
+  width: 100%;
+  max-width: 600px;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+}
+
+/* --- Badges --- */
+.new-badges {
+  width: 100%;
+  text-align: center;
+}
+
+.new-badges.hidden {
+  display: none;
+}
+
+.badges-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: var(--fg);
+}
+
+.badges-grid {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg);
+  border: 1px solid #ffd700;
+  border-radius: var(--radius);
+  animation: badgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.badge-icon {
+  font-size: 2rem;
+}
+
+.badge-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.badge-desc {
+  font-size: 0.55rem;
+  color: var(--fg-dim);
+}
+
+/* --- Actions --- */
+.results-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.action-btn.primary {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border-color: var(--btn-bg);
+}
+
+.action-btn.primary:hover {
+  background: var(--btn-hover);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--fg-dim);
+  border-radius: 3px;
+}
