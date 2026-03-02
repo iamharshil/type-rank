@@ -3,17 +3,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Minimalist Color Palette (Monkeytype inspired) */
-  --bg-deep: #323437;
-  --fg: #d1d0c5;
-  --fg-dim: #646669;
+  /* Minimalist Color Palette mapped to VS Code Theme */
+  --bg-deep: var(--vscode-editor-background, #323437);
+  --fg: var(--vscode-editor-foreground, #d1d0c5);
+  --fg-dim: var(--vscode-descriptionForeground, #646669);
 
-  --accent: #e2b714;
-  --accent-dim: rgba(226, 183, 20, 0.2);
+  --accent: var(--vscode-textLink-foreground, #e2b714);
+  --accent-dim: transparent;
 
   --correct: var(--fg);
-  --incorrect: #ca4754;
-  --incorrect-bg: rgba(202, 71, 84, 0.2);
+  --incorrect: var(--vscode-errorForeground, #ca4754);
+  --incorrect-bg: transparent;
 
   --current: var(--accent);
 

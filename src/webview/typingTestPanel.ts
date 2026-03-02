@@ -109,7 +109,7 @@ export class TypingTestPanel {
         await this.storage.incrementSessionStreak();
 
         // Update daily streak
-        const dailyStreak = await this.storage.updateDailyStreak();
+        const dailyStreak = await this.storage.updateDailyStreak(result.accuracy);
 
         // Calculate and award XP
         const xpBreakdown = calculateXpFromTest(
@@ -334,9 +334,7 @@ export class TypingTestPanel {
       </div>
 
       <!-- Actions -->
-      <div class="results-actions">
-        <button class="action-btn primary" id="restartBtn">Try Again</button>
-      </div>
+      <button class="restart-btn" id="restartBtn">Try Again</button>
     </div>
   </div>
 

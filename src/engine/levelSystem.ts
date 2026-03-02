@@ -76,37 +76,14 @@ export function calculateXpFromTest(
         return { baseXp: 0, wpmBonus: 0, accuracyBonus: 0, consistencyBonus: 0, durationBonus: 0, streakMultiplier: 1, totalXp: 0 };
     }
 
-    // Base XP: every completed test gives some XP
-    const baseXp = 25;
+    // XP is based strictly on speed + accuracy.
+    const baseXp = 0;
+    const wpmBonus = Math.floor(wpm);
+    const accuracyBonus = Math.floor(accuracy);
 
-    // WPM bonus: scales with performance
-    // 0-30 WPM: 0-15 bonus | 30-60: 15-45 | 60-100: 45-95 | 100-150: 95-170 | 150+: 170+
-    const wpmBonus = Math.floor(wpm * 1.1);
-
-    // Accuracy bonus: rewards precision (exponential above 90%)
-    let accuracyBonus = 0;
-    if (accuracy >= 100) {
-        accuracyBonus = 50; // Perfect accuracy jackpot
-    } else if (accuracy >= 95) {
-        accuracyBonus = 30;
-    } else if (accuracy >= 90) {
-        accuracyBonus = 20;
-    } else if (accuracy >= 80) {
-        accuracyBonus = 10;
-    } else {
-        accuracyBonus = Math.floor(accuracy / 10);
-    }
-
-    // Consistency bonus: stable typing earns more
-    const consistencyBonus = consistency >= 90 ? 20 : consistency >= 70 ? 10 : 5;
-
-    // Duration bonus: longer tests earn more
-    const durationSec = durationMs / 1000;
-    let durationBonus = 0;
-    if (durationSec >= 120) { durationBonus = 30; }
-    else if (durationSec >= 60) { durationBonus = 20; }
-    else if (durationSec >= 30) { durationBonus = 10; }
-    else { durationBonus = 5; }
+    // No distinct bonus for consistency or duration to keep it purely speed+accuracy
+    const consistencyBonus = 0;
+    const durationBonus = 0;
 
     // Streak multiplier: consecutive days boost XP
     // Day 1: 1x, Day 2: 1.1x, Day 3: 1.2x, ..., Day 7+: 1.6x, Day 14+: 2x, Day 30+: 2.5x
@@ -116,7 +93,7 @@ export function calculateXpFromTest(
     else if (dailyStreak >= 7) { streakMultiplier = 1.6; }
     else if (dailyStreak >= 2) { streakMultiplier = 1.0 + (dailyStreak - 1) * 0.1; }
 
-    const rawXp = baseXp + wpmBonus + accuracyBonus + consistencyBonus + durationBonus;
+    const rawXp = wpmBonus + accuracyBonus;
     const totalXp = Math.floor(rawXp * streakMultiplier);
 
     return {

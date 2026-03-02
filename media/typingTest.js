@@ -413,11 +413,8 @@
             const details = document.getElementById('xpDetails');
             details.innerHTML = '';
             const items = [
-                { label: 'Base', value: xpBreakdown.baseXp },
-                { label: 'WPM', value: xpBreakdown.wpmBonus },
+                { label: 'Speed', value: xpBreakdown.wpmBonus },
                 { label: 'Accuracy', value: xpBreakdown.accuracyBonus },
-                { label: 'Consistency', value: xpBreakdown.consistencyBonus },
-                { label: 'Duration', value: xpBreakdown.durationBonus },
             ];
             items.forEach(item => {
                 if (item.value > 0) {

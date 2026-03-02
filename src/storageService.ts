@@ -199,29 +199,50 @@ export class StorageService {
         return lastDate === '' ? 0 : 0;
     }
 
-    async updateDailyStreak(): Promise<number> {
-        const lastDate = this.context.globalState.get<string>('typerank.lastDailyDate', '');
-        const streak = this.context.globalState.get<number>('typerank.dailyStreak', 0);
+    async updateDailyStreak(accuracy: number): Promise<number> {
         const today = new Date().toISOString().split('T')[0];
+        let streak = this.context.globalState.get<number>('typerank.dailyStreak', 0);
+        const lastStreakDate = this.context.globalState.get<string>('typerank.lastDailyDate', '');
+        let penaltyDate = this.context.globalState.get<string>('typerank.penaltyDate', '');
+        let penaltyCount = this.context.globalState.get<number>('typerank.penaltyCount', 0);
 
-        if (lastDate === today) {
-            return streak; // Already updated today
+        // Reset penalties if it is a new day
+        if (penaltyDate !== today) {
+            penaltyCount = 0;
+            penaltyDate = today;
         }
 
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-        let newStreak: number;
-        if (lastDate === yesterdayStr) {
-            newStreak = streak + 1; // Continue streak
+        if (accuracy < 75) {
+            if (penaltyCount === 0) {
+                // First <75% today: do not increase or decrease streak
+                penaltyCount = 1;
+            } else {
+                // Second or subsequent <75% today: decrease streak
+                penaltyCount++;
+                streak = Math.max(0, streak - 1);
+            }
         } else {
-            newStreak = 1; // Start fresh
+            // Accuracy >= 75%
+            if (lastStreakDate !== today) {
+                // We haven't successfully incremented the streak today
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                if (lastStreakDate === yesterdayStr) {
+                    streak++; // Continued streak
+                } else {
+                    streak = 1; // Started a fresh streak
+                }
+                await this.context.globalState.update('typerank.lastDailyDate', today);
+            }
         }
 
-        await this.context.globalState.update('typerank.dailyStreak', newStreak);
-        await this.context.globalState.update('typerank.lastDailyDate', today);
-        return newStreak;
+        await this.context.globalState.update('typerank.dailyStreak', streak);
+        await this.context.globalState.update('typerank.penaltyDate', penaltyDate);
+        await this.context.globalState.update('typerank.penaltyCount', penaltyCount);
+
+        return streak;
     }
 
     private calculateConsecutiveDays(history: TestResult[]): number {

@@ -3,13 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* Minimalist Color Palette */
+    /* Minimalist Color Palette mapped to VS Code Theme */
     --bg-deep: var(--vscode-sideBar-background, #323437);
-    --fg: #d1d0c5;
-    --fg-dim: #646669;
+    --bg-panel: var(--vscode-sideBarSectionHeader-background, rgba(0, 0, 0, 0.1));
+    --fg: var(--vscode-foreground, #d1d0c5);
+    --fg-dim: var(--vscode-descriptionForeground, #646669);
 
-    --accent: #e2b714;
-    --accent-dim: rgba(226, 183, 20, 0.2);
+    --accent: var(--vscode-textLink-foreground, #e2b714);
+    --accent-dim: transparent;
 
     --correct: var(--fg);
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
