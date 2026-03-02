@@ -76,11 +76,20 @@ TypeRank includes a multi-layered anti-cheat engine:
 
 Suspicious results are flagged and marked **unranked**.
 
-### 📊 Status Bar
+### 📊 Passive Coding Tracker
+
+TypeRank tracks your **real coding speed** passively as you type in any file:
+- Rolling WPM calculated from editor keystrokes (paste/autocomplete filtered out)
+- Accuracy estimated from backspace ratio
+- XP awarded every 60 seconds of active coding
+- Coding avg WPM shown in the sidebar alongside test stats
+
+### 📊 Dual WPM Status Bar
 
 Your typing stats live in the VS Code status bar:
-- **⌨️ WPM** — Shows your best WPM. Click to start a new test.
-- **🥇 Rank** — Shows your current rank badge. Click to view profile.
+- **⌨️ Test WPM** — Your average typing test speed. Click to start a test.
+- **$(code) Coding WPM** — Your live/average coding speed (passive).
+- **🥇 Rank | Lv.** — Your rank badge and level. Click to view profile.
 
 ### 📋 Sidebar Panel
 
@@ -183,7 +192,8 @@ type-rank/
 ├── src/
 │   ├── extension.ts              # Entry point — registers commands & providers
 │   ├── storageService.ts         # Persistence layer (VS Code globalState)
-│   ├── statusBar.ts              # Status bar WPM + rank display
+│   ├── codingTracker.ts          # Passive editor keystroke monitor
+│   ├── statusBar.ts              # Dual WPM + rank display
 │   ├── engine/
 │   │   ├── wordGenerator.ts      # Word lists (common/code/quotes)
 │   │   ├── statsCalculator.ts    # WPM, accuracy, consistency math

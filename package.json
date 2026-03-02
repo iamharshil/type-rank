@@ -3,17 +3,24 @@
   "displayName": "TypeRank",
   "description": "A Monkeytype-inspired typing test with rankings, badges, anti-cheat, and a competitive leaderboard — right inside VS Code.",
   "version": "0.1.0",
-  "publisher": "typerank",
+  "publisher": "iamharshil",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AmanVarshney01/type-rank"
+  },
+  "homepage": "https://github.com/AmanVarshney01/type-rank#readme",
   "icon": "media/icon.png",
   "galleryBanner": {
-    "color": "#1a1a2e",
+    "color": "#323437",
     "theme": "dark"
   },
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Education"
   ],
   "keywords": [
     "typing",
