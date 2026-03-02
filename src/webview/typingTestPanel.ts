@@ -280,37 +280,51 @@ export class TypingTestPanel {
 
       <!-- XP & Level -->
       <div class="xp-section" id="xpSection">
-        <div class="level-display">
-          <span class="level-icon" id="levelIcon">🌱</span>
-          <span class="level-number">Lv. <span id="levelNumber">0</span></span>
-          <span class="level-title" id="levelTitle">Newbie</span>
+        <div class="xp-header">
+          <div class="level-display">
+            <span class="level-icon" id="levelIcon">🌱</span>
+            <span class="level-info-col">
+              <span class="level-number">Lv. <span id="levelNumber">0</span></span>
+              <span class="level-title" id="levelTitle">Newbie</span>
+            </span>
+          </div>
+          <div class="streak-display" id="streakDisplay">
+            <span class="streak-fire">🔥</span>
+            <span class="streak-count" id="streakCount">0</span>
+            <span class="streak-label">day streak</span>
+            <span class="streak-multiplier" id="streakMultiplier">1x</span>
+          </div>
         </div>
+
         <div class="xp-bar-container">
           <div class="xp-bar" id="xpBar" style="width: 0%"></div>
+        </div>
+        
+        <div class="xp-footer">
+          <div class="xp-breakdown" id="xpBreakdown">
+            <span class="xp-earned" id="xpEarned">+0 XP</span>
+            <div class="xp-details" id="xpDetails"></div>
+          </div>
           <span class="xp-text" id="xpText">0 / 0 XP</span>
-        </div>
-        <div class="xp-breakdown" id="xpBreakdown">
-          <span class="xp-earned" id="xpEarned">+0 XP</span>
-          <div class="xp-details" id="xpDetails"></div>
-        </div>
-        <div class="streak-display" id="streakDisplay">
-          <span class="streak-fire">🔥</span>
-          <span class="streak-count" id="streakCount">0</span>
-          <span class="streak-label">day streak</span>
-          <span class="streak-multiplier" id="streakMultiplier">1x</span>
         </div>
       </div>
 
       <!-- Level Up -->
-      <div class="level-up hidden" id="levelUpSection">
-        <div class="level-up-text">🎉 LEVEL UP!</div>
-        <div class="level-up-levels" id="levelUpLevels"></div>
+      <div class="alert-box level-up hidden" id="levelUpSection">
+        <span class="alert-icon">🎉</span>
+        <div class="alert-content">
+          <div class="alert-title level-up-text">LEVEL UP!</div>
+          <div class="alert-desc level-up-levels" id="levelUpLevels"></div>
+        </div>
       </div>
 
       <!-- Milestone -->
-      <div class="milestone-unlock hidden" id="milestoneSection">
-        <div class="milestone-header">🏅 Milestone Unlocked!</div>
-        <div class="milestones-list" id="milestonesList"></div>
+      <div class="alert-box milestone-unlock hidden" id="milestoneSection">
+        <span class="alert-icon">🏅</span>
+        <div class="alert-content">
+          <div class="alert-title milestone-header">Milestone Unlocked!</div>
+          <div class="milestones-list" id="milestonesList"></div>
+        </div>
       </div>
 
       <!-- New Badges -->

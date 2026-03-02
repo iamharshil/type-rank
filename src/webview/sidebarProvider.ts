@@ -90,17 +90,37 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 </head>
 <body>
   <div id="sidebar">
-    <!-- Profile Card -->
+    <!-- Profile Card (Unified Profile & Level) -->
     <div class="profile-card">
-      <div class="rank-badge" id="rankBadge">🥉</div>
-      <div class="profile-info">
-        <h2 class="profile-name" id="profileName">Typer</h2>
-        <span class="profile-rank" id="profileRank">Bronze Typer</span>
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <span class="rank-badge" id="rankBadge">🥉</span>
+        </div>
+        <div class="profile-info">
+          <h2 class="profile-name" id="profileName">Typer</h2>
+          <span class="profile-rank" id="profileRank">Bronze Typer</span>
+        </div>
       </div>
+      
+      <div class="level-section">
+        <div class="level-header">
+          <span class="level-icon" id="sidebarLevelIcon">🌱</span>
+          <span class="level-text">Lv. <strong id="sidebarLevel">0</strong> <span id="sidebarLevelTitle">Newbie</span></span>
+          <span class="streak-badge" id="sidebarStreak" title="Daily Streak">🔥 0</span>
+        </div>
+        <div class="sidebar-xp-bar-wrap">
+          <div class="sidebar-xp-bar" id="sidebarXpBar" style="width: 0%"></div>
+        </div>
+        <div class="level-footer">
+          <div class="next-milestone" id="sidebarMilestone">Next: 🌱 Lv.1 Newbie</div>
+          <div class="xp-label" id="sidebarXpLabel">0 / 0 XP</div>
+        </div>
+      </div>
+
       <div class="profile-stats">
         <div class="profile-stat">
           <span class="profile-stat-value" id="statBestWpm">0</span>
-          <span class="profile-stat-label">Best</span>
+          <span class="profile-stat-label">Best WPM</span>
         </div>
         <div class="profile-stat">
           <span class="profile-stat-value" id="statAvgWpm">0</span>
@@ -111,23 +131,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           <span class="profile-stat-label">Tests</span>
         </div>
       </div>
-    </div>
-
-    <!-- Level & XP -->
-    <div class="level-section">
-      <div class="level-header">
-        <span class="level-badge" id="sidebarLevelIcon">🌱</span>
-        <span class="level-info">
-          <span class="level-num">Lv. <strong id="sidebarLevel">0</strong></span>
-          <span class="level-title-text" id="sidebarLevelTitle">Newbie</span>
-        </span>
-        <span class="streak-badge" id="sidebarStreak">🔥 0</span>
-      </div>
-      <div class="sidebar-xp-bar-wrap">
-        <div class="sidebar-xp-bar" id="sidebarXpBar" style="width: 0%"></div>
-      </div>
-      <div class="xp-label" id="sidebarXpLabel">0 / 0 XP</div>
-      <div class="next-milestone" id="sidebarMilestone">Next: 🌱 Lv.1 Newbie</div>
     </div>
 
     <!-- Quick Start -->

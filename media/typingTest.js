@@ -29,6 +29,8 @@
     const liveStats = document.getElementById('liveStats');
     const resultsScreen = document.getElementById('resultsScreen');
     const restartBtn = document.getElementById('restartBtn');
+    const cursorLine = document.getElementById('cursorLine');
+    let cursorBlinkTimeout = null;
 
     // --- Config Handlers ---
     document.getElementById('durationOptions').addEventListener('click', (e) => {
@@ -294,6 +296,8 @@
 
             wordsDisplay.appendChild(wordSpan);
         });
+
+        wordsDisplay.appendChild(cursorLine);
         updateCursor();
     }
 
@@ -313,21 +317,60 @@
         // Remove all current markers
         wordsDisplay.querySelectorAll('.current').forEach(el => el.classList.remove('current'));
 
-        // Set current
-        const el = getLetterEl(currentWordIndex, currentCharIndex);
-        if (el) {
-            el.classList.add('current');
+        let targetEl = null;
+        let isEndOfWord = false;
+
+        const word = words[currentWordIndex];
+
+        if (currentCharIndex >= word.length) {
+            targetEl = getLetterEl(currentWordIndex, word.length - 1);
+            isEndOfWord = true;
+        } else {
+            targetEl = getLetterEl(currentWordIndex, currentCharIndex);
+        }
+
+        if (targetEl) {
+            targetEl.classList.add('current');
+
+            // Find offset of the parent word relative to the words container
+            const wordEl = wordsDisplay.querySelector(`[data-index="${currentWordIndex}"]`);
+
+            if (wordEl) {
+                // Calculate precise caret position relative to .words container
+                let left = wordEl.offsetLeft + targetEl.offsetLeft;
+                if (isEndOfWord) {
+                    left += targetEl.offsetWidth;
+                } else {
+                    left -= 1;
+                }
+
+                // Adjust vertical center based on line height (2.5rem ≈ 40px) vs caret height (1.5rem = 24px)
+                const top = wordEl.offsetTop + 8; // (40 - 24) / 2
+
+                cursorLine.style.transform = `translate(${left}px, ${top}px)`;
+                cursorLine.classList.add('active');
+                cursorLine.classList.remove('blink');
+
+                clearTimeout(cursorBlinkTimeout);
+                cursorBlinkTimeout = setTimeout(() => {
+                    cursorLine.classList.add('blink');
+                }, 500);
+            }
+        } else {
+            cursorLine.classList.remove('active');
         }
     }
 
     function scrollWordsIfNeeded() {
         const currentWordEl = wordsDisplay.querySelector(`[data-index="${currentWordIndex}"]`);
         if (currentWordEl) {
-            const container = document.querySelector('.word-container');
+            // How far down the specific word is from the top of .words
             const wordTop = currentWordEl.offsetTop;
-            const containerHeight = container.clientHeight;
-            if (wordTop > containerHeight * 0.6) {
-                wordsDisplay.style.transform = `translateY(-${wordTop - 20}px)`;
+
+            // Only scroll if we've moved past the first line
+            if (wordTop > 10) {
+                // Scroll up exactly by the word's top offset so it becomes the new top line
+                wordsDisplay.style.transform = `translateY(-${wordTop}px)`;
             }
         }
     }
