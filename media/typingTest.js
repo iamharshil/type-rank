@@ -332,30 +332,34 @@
         if (targetEl) {
             targetEl.classList.add('current');
 
-            // Find offset of the parent word relative to the words container
-            const wordEl = wordsDisplay.querySelector(`[data-index="${currentWordIndex}"]`);
+            const containerRect = wordsDisplay.getBoundingClientRect();
+            const charRect = targetEl.getBoundingClientRect();
 
-            if (wordEl) {
-                // Calculate precise caret position relative to .words container
-                let left = wordEl.offsetLeft + targetEl.offsetLeft;
-                if (isEndOfWord) {
-                    left += targetEl.offsetWidth;
-                } else {
-                    left -= 1;
-                }
+            // Calculate precise sub-pixel caret position relative to .words container
+            let left = charRect.left - containerRect.left;
+            let top = charRect.top - containerRect.top;
 
-                // Adjust vertical center based on line height (2.5rem ≈ 40px) vs caret height (1.5rem = 24px)
-                const top = wordEl.offsetTop + 8; // (40 - 24) / 2
-
-                cursorLine.style.transform = `translate(${left}px, ${top}px)`;
-                cursorLine.classList.add('active');
-                cursorLine.classList.remove('blink');
-
-                clearTimeout(cursorBlinkTimeout);
-                cursorBlinkTimeout = setTimeout(() => {
-                    cursorLine.classList.add('blink');
-                }, 500);
+            if (isEndOfWord) {
+                // If it's the end of the word, align to the right edge of the last character
+                left += charRect.width;
+            } else {
+                // Align precisely to the left edge of the current character
+                // Shift slight left by 1px so the caret doesn't overlap the glyph rendering
+                left -= 1.5;
             }
+
+            // Adjust vertical center based on character height vs caret height (which is 1.6rem)
+            const caretHeight = 25.6; // approx 1.6rem base 16px
+            top = top + (charRect.height / 2) - (caretHeight / 2);
+
+            cursorLine.style.transform = `translate(${left}px, ${top}px)`;
+            cursorLine.classList.add('active');
+            cursorLine.classList.remove('blink');
+
+            clearTimeout(cursorBlinkTimeout);
+            cursorBlinkTimeout = setTimeout(() => {
+                cursorLine.classList.add('blink');
+            }, 500);
         } else {
             cursorLine.classList.remove('active');
         }
