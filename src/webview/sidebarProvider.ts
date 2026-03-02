@@ -120,15 +120,19 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       <div class="profile-stats">
         <div class="profile-stat">
           <span class="profile-stat-value" id="statBestWpm">0</span>
-          <span class="profile-stat-label">Best WPM</span>
+          <span class="profile-stat-label">best</span>
         </div>
         <div class="profile-stat">
           <span class="profile-stat-value" id="statAvgWpm">0</span>
-          <span class="profile-stat-label">Avg WPM</span>
+          <span class="profile-stat-label">test avg</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-value" id="statCodingWpm">0</span>
+          <span class="profile-stat-label">coding</span>
         </div>
         <div class="profile-stat">
           <span class="profile-stat-value" id="statTests">0</span>
-          <span class="profile-stat-label">Tests</span>
+          <span class="profile-stat-label">tests</span>
         </div>
       </div>
     </div>

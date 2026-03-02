@@ -47,6 +47,8 @@ export interface UserProfile {
     dailyStreak: number;
     nextMilestoneLevel: number;
     nextMilestoneTitle: string;
+    // Coding tracker
+    codingAvgWpm: number;
 }
 
 export class StorageService {
@@ -134,7 +136,8 @@ export class StorageService {
             levelIcon: getLevelIcon(levelInfo.level),
             dailyStreak,
             nextMilestoneLevel: nextMilestone ? nextMilestone.level : 500,
-            nextMilestoneTitle: nextMilestone ? nextMilestone.title : 'GOAT'
+            nextMilestoneTitle: nextMilestone ? nextMilestone.title : 'GOAT',
+            codingAvgWpm: this.getCodingAvgWpm()
         };
     }
 
@@ -269,6 +272,29 @@ export class StorageService {
         return consecutive;
     }
 
+    // --- Coding Tracker Stats ---
+
+    getCodingAvgWpm(): number {
+        return this.context.globalState.get<number>('typerank.codingAvgWpm', 0);
+    }
+
+    async addCodingSample(wpm: number, accuracy: number): Promise<void> {
+        const samples = this.context.globalState.get<{ wpm: number; accuracy: number; timestamp: number }[]>('typerank.codingSamples', []);
+        samples.push({ wpm, accuracy, timestamp: Date.now() });
+
+        // Keep only the last 100 samples
+        if (samples.length > 100) {
+            samples.splice(0, samples.length - 100);
+        }
+
+        await this.context.globalState.update('typerank.codingSamples', samples);
+
+        // Recalculate rolling average from last 20 samples
+        const recent = samples.slice(-20);
+        const avg = Math.round(recent.reduce((sum, s) => sum + s.wpm, 0) / recent.length);
+        await this.context.globalState.update('typerank.codingAvgWpm', avg);
+    }
+
     // --- Cleanup ---
 
     async clearAll(): Promise<void> {
@@ -279,5 +305,7 @@ export class StorageService {
         await this.context.globalState.update('typerank.totalXp', undefined);
         await this.context.globalState.update('typerank.dailyStreak', undefined);
         await this.context.globalState.update('typerank.lastDailyDate', undefined);
+        await this.context.globalState.update('typerank.codingSamples', undefined);
+        await this.context.globalState.update('typerank.codingAvgWpm', undefined);
     }
 }

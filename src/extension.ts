@@ -4,6 +4,7 @@ import { StatusBarManager } from './statusBar';
 import { BadgeEvaluator } from './badges/badgeEvaluator';
 import { TypingTestPanel } from './webview/typingTestPanel';
 import { SidebarProvider } from './webview/sidebarProvider';
+import { CodingTracker } from './codingTracker';
 
 export function activate(context: vscode.ExtensionContext) {
     // Initialize core services
@@ -11,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
     const badgeEvaluator = new BadgeEvaluator(storage);
     const statusBar = new StatusBarManager(storage);
     const sidebarProvider = new SidebarProvider(context.extensionUri, storage);
+    const codingTracker = new CodingTracker(storage, statusBar);
 
     // Register sidebar webview provider
     context.subscriptions.push(
@@ -55,8 +57,9 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Add status bar to disposables
+    // Add services to disposables
     context.subscriptions.push({ dispose: () => statusBar.dispose() });
+    context.subscriptions.push({ dispose: () => codingTracker.dispose() });
 
     console.log('TypeRank extension activated! 🎯');
 }

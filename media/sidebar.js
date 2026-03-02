@@ -25,6 +25,7 @@
         document.getElementById('profileRank').textContent = profile.currentRank + ' Typer';
         document.getElementById('statBestWpm').textContent = profile.bestWpm;
         document.getElementById('statAvgWpm').textContent = profile.averageWpm;
+        document.getElementById('statCodingWpm').textContent = profile.codingAvgWpm || '—';
         document.getElementById('statTests').textContent = profile.totalTests;
 
         // Level section
